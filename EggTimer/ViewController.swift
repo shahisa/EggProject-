@@ -10,14 +10,22 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var progressBar: UIProgressView!
+    
     let eggTimes = ["Soft":5, "Medium":7, "Hard":12]
+    var secondsRemaining = 60;
+    
+    var timer = Timer()
     
     @IBAction func hardnessSelected(_ sender: UIButton) {
+        timer.invalidate();
+        progressBar.progress = 1.0;
         
+        let hardness = sender.currentTitle!
+        secondsRemaining = eggTimes[hardness]!
         
-        startTimer(inputTime: eggTimes[sender.currentTitle!] ?? 0)
-        
-        
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self,  selector: #selector(updateTimer), userInfo: nil, repeats: true)
     }
     
     func showTitle(buttonTitle: String) {
@@ -27,17 +35,15 @@ class ViewController: UIViewController {
         
     }
     
-    func startTimer(inputTime: Int) {
-        Timer.invalidate()
-        var time = inputTime * 60
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { (Timer) in
-                if time > 0 {
-                    print ("\(time) seconds")
-                    time -= 1
-                } else {
-                    Timer.invalidate()
-                }
-            }
+    @objc func updateTimer() {
+        
+        if secondsRemaining > 0 {
+            print("\(secondsRemaining) seconds");
+            secondsRemaining -= 1;
+        } else {
+            timer.invalidate();
+            titleLabel.text = "DONE!"
+        }
     }
     
 
